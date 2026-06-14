@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telco Churn Predictor</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --danger: #f87171;
+      --success: #4ade80;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 100%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.5rem;
+      font-size: 1.75rem;
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    form {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    input, select {
+      padding: 0.55rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--accent);
+      border-color: transparent;
+    }
+
+    .actions {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      padding: 0.65rem 1.25rem;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: #0f172a;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    button:hover { background: var(--accent-hover); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .secondary:hover {
+      background: #334155;
+      color: var(--text);
+    }
+
+    #result {
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      display: none;
+    }
+
+    #result.visible { display: block; }
+
+    #result.error {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    .prediction-yes { color: var(--danger); font-weight: 700; font-size: 1.25rem; }
+    .prediction-no { color: var(--success); font-weight: 700; font-size: 1.25rem; }
+
+    .prob-bar {
+      margin-top: 0.75rem;
+      height: 10px;
+      background: #334155;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .prob-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--danger));
+      transition: width 0.4s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Telco Churn Predictor</h1>
+      <p>Enter customer details to predict churn risk.</p>
+    </header>
+
+    <form id="predict-form">
+      <div class="grid">
+        <label>Gender
+          <select name="gender" required>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+          </select>
+        </label>
+
+        <label>Senior Citizen
+          <select name="SeniorCitizen" required>
+            <option value="0">No</option>
+            <option value="1">Yes</option>
+          </select>
+        </label>
+
+        <label>Partner
+          <select name="Partner" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </label>
+
+        <label>Dependents
+          <select name="Dependents" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </label>
+
+        <label>Tenure (months)
+          <input type="number" name="tenure" min="0" value="12" required />
+        </label>
+
+        <label>Phone Service
+          <select name="PhoneService" required>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+
+        <label>Multiple Lines
+          <select name="MultipleLines" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No phone service">No phone service</option>
+          </select>
+        </label>
+
+        <label>Internet Service
+          <select name="InternetService" required>
+            <option value="DSL">DSL</option>
+            <option value="Fiber optic">Fiber optic</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+
+        <label>Online Security
+          <select name="OnlineSecurity" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No internet service">No internet service</option>
+          </select>
+        </label>
+
+        <label>Online Backup
+          <select name="OnlineBackup" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No internet service">No internet service</option>
+          </select>
+        </label>
+
+        <label>Device Protection
+          <select name="DeviceProtection" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No internet service">No internet service</option>
+          </select>
+        </label>
+
+        <label>Tech Support
+          <select name="TechSupport" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No internet service">No internet service</option>
+          </select>
+        </label>
+
+        <label>Streaming TV
+          <select name="StreamingTV" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No internet service">No internet service</option>
+          </select>
+        </label>
+
+        <label>Streaming Movies
+          <select name="StreamingMovies" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+            <option value="No internet service">No internet service</option>
+          </select>
+        </label>
+
+        <label>Contract
+          <select name="Contract" required>
+            <option value="Month-to-month">Month-to-month</option>
+            <option value="One year">One year</option>
+            <option value="Two year">Two year</option>
+          </select>
+        </label>
+
+        <label>Paperless Billing
+          <select name="PaperlessBilling" required>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+
+        <label>Payment Method
+          <select name="PaymentMethod" required>
+            <option value="Electronic check">Electronic check</option>
+            <option value="Mailed check">Mailed check</option>
+            <option value="Bank transfer (automatic)">Bank transfer (automatic)</option>
+            <option value="Credit card (automatic)">Credit card (automatic)</option>
+          </select>
+        </label>
+
+        <label>Monthly Charges ($)
+          <input type="number" name="MonthlyCharges" min="0" step="0.01" value="70" required />
+        </label>
+
+        <label>Total Charges ($)
+          <input type="number" name="TotalCharges" min="0" step="0.01" value="840" required />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="submit-btn">Predict Churn</button>
+        <button type="button" class="secondary" id="reset-btn">Reset</button>
+      </div>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("predict-form");
+    const result = document.getElementById("result");
+    const submitBtn = document.getElementById("submit-btn");
+    const resetBtn = document.getElementById("reset-btn");
+
+    resetBtn.addEventListener("click", () => {
+      form.reset();
+      result.className = "";
+      result.innerHTML = "";
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submitBtn.disabled = true;
+      result.className = "visible";
+      result.innerHTML = "Predicting...";
+
+      const data = Object.fromEntries(new FormData(form));
+      data.SeniorCitizen = Number(data.SeniorCitizen);
+      data.tenure = Number(data.tenure);
+      data.MonthlyCharges = Number(data.MonthlyCharges);
+      data.TotalCharges = Number(data.TotalCharges);
+
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        const body = await response.json();
+
+        if (!response.ok) {
+          throw new Error(body.detail || "Prediction failed");
+        }
+
+        const pct = (body.churn_probability * 100).toFixed(1);
+        const churnClass = body.churn === "Yes" ? "prediction-yes" : "prediction-no";
+
+        result.className = "visible";
+        result.innerHTML = `
+          <div>Predicted churn: <span class="${churnClass}">${body.churn}</span></div>
+          <div style="margin-top:0.5rem;color:var(--muted)">Churn probability: ${pct}%</div>
+          <div class="prob-bar"><div class="prob-fill" style="width:${pct}%"></div></div>
+        `;
+      } catch (err) {
+        result.className = "visible error";
+        result.textContent = err.message;
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

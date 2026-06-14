@@ -1,0 +1,26 @@
+{
+  "roc_auc": 0.8454,
+  "f1_churn": 0.6181,
+  "accuracy": 0.7729,
+  "optimal_threshold": 0.6,
+  "val_f1_at_threshold": 0.6718,
+  "scale_pos_weight": 2.7684,
+  "best_params": {
+    "n_estimators": 150,
+    "max_depth": 4,
+    "learning_rate": 0.05,
+    "subsample": 0.9,
+    "colsample_bytree": 0.8
+  },
+  "confusion_matrix": [
+    [
+      830,
+      205
+    ],
+    [
+      115,
+      259
+    ]
+  ],
+  "model": "XGBoost"
+}
