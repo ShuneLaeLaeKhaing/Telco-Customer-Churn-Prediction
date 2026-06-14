@@ -65,7 +65,7 @@ jupyter notebook analysis.ipynb
 - **Algorithm:** XGBoost
 - **Class imbalance:** `scale_pos_weight` from training set ratio
 - **Tuning:** Hyperparameter search on validation set; probability threshold tuned for best F1 (0.0–1.0, step 0.01)
-- **Split:** Stratified train / validation / test
+- **Split:** Stratified train / validation / test (64% / 16% / 20%)
 
 Train the model:
 
@@ -83,7 +83,7 @@ Saved artifacts:
 
 ## Model Evaluation
 
-Primary metrics for this imbalanced problem are **F1 (churn class)** and **ROC-AUC**.
+Primary metrics for this imbalanced dataset are **F1 (churn class)** and **ROC-AUC**.
 
 **Holdout test results:**
 
