@@ -125,7 +125,6 @@ uvicorn app:app --reload --port 8000
 | http://localhost:8000/docs | Swagger API docs |
 | `GET /health` | Service health check |
 | `POST /predict` | Returns `churn` and `churn_probability` |
-```
 
 ## How to Use
 
